@@ -2,21 +2,24 @@ const mongoose = require("mongoose");
 
 const todoSchema = new mongoose.Schema(
   {
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    category: {
+    title: {
       type: String,
-      enum: ["Homework", "Office Work"],
-      default: "Homework",
+      required: true,
     },
+    description: String,
+    category: String,
     status: {
       type: String,
-      enum: ["Not Started", "Pending", "Completed"],
       default: "Not Started",
     },
+    deleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  { timestamps: true } // adds createdAt, updatedAt automatically
+  {
+    timestamps: true, // This adds createdAt and updatedAt fields automatically
+  }
 );
 
 module.exports = mongoose.model("Todo", todoSchema);
-

@@ -1,45 +1,54 @@
+// controllers/todoController.js
 const Todo = require("../models/Todo");
 
-// Get all todos
+// Get All Todos
 const getTodos = async (req, res) => {
   try {
-    const todos = await Todo.find({ status: { $ne: "Completed" } });
+    const todos = await Todo.find();
     res.json(todos);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-// Create todo
+// Create a Todo
 const createTodo = async (req, res) => {
   try {
     const newTodo = new Todo(req.body);
     const saved = await newTodo.save();
     res.status(201).json(saved);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };
 
-// Update todo
+// Update a Todo
 const updateTodo = async (req, res) => {
   try {
-    const updated = await Todo.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    res.json(updated);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+    const updatedTodo = await Todo.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    if (!updatedTodo) {
+      return res.status(404).json({ message: "Todo not found" });
+    }
+    res.json(updatedTodo);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-// Delete todo
+// Delete a Todo
 const deleteTodo = async (req, res) => {
   try {
-    await Todo.findByIdAndDelete(req.params.id);
-    res.json({ message: "Todo deleted" });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+    const deletedTodo = await Todo.findByIdAndDelete(req.params.id);
+    if (!deletedTodo) {
+      return res.status(404).json({ message: "Todo not found" });
+    }
+    res.json({ message: "Deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
   }
 };
 
