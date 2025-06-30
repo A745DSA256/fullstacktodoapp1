@@ -1,10 +1,9 @@
-// controllers/todoController.js
 const Todo = require("../models/Todo");
 
-// Get All Todos
+
 const getTodos = async (req, res) => {
   try {
-    const todos = await Todo.find();
+    const todos = await Todo.find({ deleted: { $ne: true } }); 
     res.json(todos);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
@@ -39,14 +38,18 @@ const updateTodo = async (req, res) => {
   }
 };
 
-// Delete a Todo
+// Soft Delete a Todo
 const deleteTodo = async (req, res) => {
   try {
-    const deletedTodo = await Todo.findByIdAndDelete(req.params.id);
+    const deletedTodo = await Todo.findByIdAndUpdate(
+      req.params.id,
+      { deleted: true },
+      { new: true }
+    );
     if (!deletedTodo) {
       return res.status(404).json({ message: "Todo not found" });
     }
-    res.json({ message: "Deleted successfully" });
+    res.json({ message: "Deleted successfully", todo: deletedTodo });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
